@@ -129,20 +129,42 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
 
                   {calc && (
                     <div className="item-progress">
+                      {/* Calculate percentage for visual bar */}
+                      {(() => {
+                        let percentage = null;
+                        if (intervalKm && calc.kmDue !== null) {
+                          const kmUsed = intervalKm - calc.kmDue;
+                          percentage = Math.min(100, Math.max(0, (kmUsed / intervalKm) * 100));
+                        } else if (intervalYears && calc.daysDue !== null) {
+                          const daysUsed = (intervalYears * 365) - calc.daysDue;
+                          percentage = Math.min(100, Math.max(0, (daysUsed / (intervalYears * 365)) * 100));
+                        }
+                        
+                        return percentage !== null ? (
+                          <div className="progress-bar-container">
+                            <div className="progress-bar">
+                              <div 
+                                className={`progress-fill ${status.toLowerCase().replace(' ', '-')}`}
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
                       <div className="progress-info">
                         {status === 'Overdue' && (
                           <span className="urgency-text overdue">
-                            ⚠️ {Math.abs(calc.kmDue)} km overskredet
+                            ⚠️ {Math.abs(calc.kmDue || calc.daysDue)} {calc.kmDue !== null ? 'km' : 'dager'} overskredet
                           </span>
                         )}
                         {status === 'Due Soon' && (
                           <span className="urgency-text due-soon">
-                            {calc.kmDue > 0 ? `${calc.kmDue} km igjen` : `${Math.abs(calc.daysDue)} dager overskredet`}
+                            {calc.kmDue > 0 ? `${calc.kmDue} km igjen` : `${Math.abs(calc.daysDue)} dager igjen`}
                           </span>
                         )}
                         {status === 'OK' && (
                           <span className="urgency-text ok">
-                            ✅ {calc.kmDue} km igjen
+                            ✅ {calc.kmDue !== null ? `${calc.kmDue} km igjen` : `${calc.daysDue} dager igjen`}
                           </span>
                         )}
                       </div>
