@@ -19,6 +19,28 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   const calculateProgress = () => {
     let percentage = null;
     let display = null;
+    
+    // Parse intervalKm and intervalYears from interval string if not present
+    let intervalKm = editedItem.intervalKm || 0;
+    let intervalYears = editedItem.intervalYears || 0;
+    
+    if (!intervalKm && editedItem.interval) {
+      // Try "XXX YYY km" format first (Norwegian: space-separated thousands like "10 000 km" or "50-60 000 km")
+      let spacedMatch = editedItem.interval.match(/.*?(\d+)\s+(\d+)\s*km/);
+      if (spacedMatch) {
+        intervalKm = parseInt(spacedMatch[1]) * 1000 + parseInt(spacedMatch[2]);
+      } else {
+        // Try "XXX km" format
+        let kmMatch = editedItem.interval.match(/(\d+)\s*km/);
+        if (kmMatch) intervalKm = parseInt(kmMatch[1]);
+      }
+    }
+    
+    if (!intervalYears && editedItem.interval) {
+      const yearMatch = editedItem.interval.match(/(\d+(?:\.\d+)?)\s*år/);
+      if (yearMatch) intervalYears = parseFloat(yearMatch[1]);
+    }
+    
     // If there's service history, prefer the most recent record as last change
     const historyKey = `${editedItem.category || 'custom'}|${editedItem.part}`;
     const hist = serviceHistory && serviceHistory[historyKey] ? serviceHistory[historyKey] : null;
@@ -26,17 +48,17 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
 
     // Calculate based on km if available
     const sourceKmLast = latestRecord && latestRecord.km ? parseInt(latestRecord.km) : (editedItem.kmAtLastChange ? parseInt(editedItem.kmAtLastChange) : null);
-    if (editedItem.intervalKm && sourceKmLast && currentKm) {
+    if (intervalKm && sourceKmLast && currentKm) {
       const kmNum = parseInt(currentKm);
       const lastKm = sourceKmLast;
-      const interval = parseInt(editedItem.intervalKm);
+      const interval = intervalKm;
       const kmUsed = kmNum - lastKm;
       percentage = Math.min(100, Math.max(0, (kmUsed / interval) * 100));
       const kmRemaining = interval - kmUsed;
       display = kmRemaining > 0 ? `${kmRemaining} km igjen` : `${Math.abs(kmRemaining)} km overskredet`;
     }
     // Calculate based on years if km not available
-    else if (editedItem.intervalYears) {
+    else if (intervalYears) {
       const sourceDate = latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged;
       
       // Parse date - handle both standard and MM.YY formats
@@ -59,7 +81,7 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
       if (!isNaN(lastDate.getTime())) {
         const today = new Date();
         const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-        const totalDays = editedItem.intervalYears * 365;
+        const totalDays = intervalYears * 365;
         percentage = Math.min(100, Math.max(0, (daysElapsed / totalDays) * 100));
         const daysRemaining = totalDays - daysElapsed;
         display = daysRemaining > 0 ? `${Math.floor(daysRemaining)} dager igjen` : `${Math.floor(Math.abs(daysRemaining))} dager overskredet`;
