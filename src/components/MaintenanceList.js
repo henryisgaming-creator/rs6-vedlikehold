@@ -71,11 +71,18 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
               if (yearMatch) intervalYears = parseFloat(yearMatch[1]);
             }
             
+            // Get latest service record for this item to use as source truth
+            const key = `${item.category || 'custom'}|${item.part}`;
+            const hist = serviceHistory && serviceHistory[key] ? serviceHistory[key] : null;
+            const latest = hist && hist.length ? hist[hist.length - 1] : null;
+            const lastChangedSource = latest && latest.date ? latest.date : item.lastChanged;
+            const lastKmSource = latest && latest.km ? parseInt(latest.km) : (item.kmAtLastChange ? parseInt(item.kmAtLastChange) : 0);
+            
             const calc = calculateDaysUntilDue(
-              item.lastChanged,
+              lastChangedSource,
               intervalYears,
               parseInt(currentKm) || 0,
-              parseInt(item.kmAtLastChange) || 0,
+              lastKmSource || 0,
               intervalKm
             );
 

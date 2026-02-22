@@ -49,18 +49,34 @@ export const getStatusIcon = (status) => {
 };
 
 export const calculateDaysUntilDue = (lastChanged, intervalYears, currentKm, lastKm, intervalKm) => {
-  // Return null if critical data is missing
-  if (!lastChanged && (!lastKm || lastKm === 0)) return null;
-  
   let daysDue = null;
   let kmDue = null;
   let daysElapsed = null;
   let kmElapsed = null;
   
-  // Calculate days only if lastChanged is a valid date
-  if (lastChanged && lastChanged.length > 4) {  // More than just a year
-    const lastDate = new Date(lastChanged);
-    // Check if date is valid
+  // Try to parse and calculate days
+  if (lastChanged) {
+    // Accept various date formats: YYYY-MM-DD, MM.YY, or any parseable format
+    let lastDate = null;
+    
+    // Try direct parsing first
+    lastDate = new Date(lastChanged);
+    
+    // If that fails, try parsing MM.YY format (e.g. "08.25" = August 2025)
+    if (isNaN(lastDate.getTime()) && lastChanged.includes('.')) {
+      const parts = lastChanged.split('.');
+      if (parts.length === 2 && parts[0].length <= 2 && parts[1].length <= 2) {
+        const month = parseInt(parts[0]);
+        let year = parseInt(parts[1]);
+        // Assume 20xx for 2-digit years
+        if (year < 100) year += 2000;
+        if (month >= 1 && month <= 12) {
+          lastDate = new Date(year, month - 1, 1);
+        }
+      }
+    }
+    
+    // If we have a valid date, calculate days
     if (!isNaN(lastDate.getTime())) {
       const today = new Date();
       daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
@@ -76,7 +92,7 @@ export const calculateDaysUntilDue = (lastChanged, intervalYears, currentKm, las
     kmDue = intervalKm - kmElapsed;
   }
   
-  // Return null if we have no valid calculations
+  // Return null only if we have NO data to work with at all
   if (daysDue === null && kmDue === null) return null;
   
   return { daysDue, kmDue, daysElapsed, kmElapsed };
