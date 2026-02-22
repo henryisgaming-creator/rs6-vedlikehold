@@ -102,7 +102,8 @@ export const calculateDaysUntilDue = (lastChanged, intervalYears, currentKm, las
 
 export const getUrgencyStatus = (lastChanged, intervalYears, currentKm, lastKm, intervalKm) => {
   const calc = calculateDaysUntilDue(lastChanged, intervalYears, currentKm, lastKm, intervalKm);
-  if (!calc) return 'New';
+  // Treat unknown/missing data as overdue (safety-first approach)
+  if (!calc) return 'Overdue';
   
   const { daysDue, kmDue } = calc;
   

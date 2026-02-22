@@ -40,7 +40,7 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
     });
 
     // Sort: Overdue first, then Due Soon, then OK
-    const urgencyOrder = { 'Overdue': 0, 'Due Soon': 1, 'OK': 2, 'New': 3 };
+    const urgencyOrder = { 'Overdue': 0, 'Due Soon': 1, 'OK': 2 };
     return itemsWithUrgency.sort((a, b) => urgencyOrder[a.status] - urgencyOrder[b.status]);
   }, [items, currentKm, serviceHistory]);
 
