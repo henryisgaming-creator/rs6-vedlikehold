@@ -1,0 +1,502 @@
+[
+  {
+    "category": "Annet",
+    "part": "Vindusviskere",
+    "interval": "1 år/ved behov",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Annet",
+    "part": "Panser- / baklukedemper",
+    "interval": "Ved behov (~100 000 km)",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Elektrisk system",
+    "part": "Coil packs (tennspoler)",
+    "interval": "80-120 000 km",
+    "lastChanged": 2025,
+    "kmAtLastChange": 183000,
+    "nextRecommendedKm": 283000,
+    "status": "🟢 OK",
+    "comments": "⚠️ Kjent svakhet på C6 RS6 – svikter tidlig. Sjekk revisjon på coil packs. Byttet 2025 @ 183 000 km ✓"
+  },
+  {
+    "category": "Elektrisk system",
+    "part": "Batteri",
+    "interval": "5-7 år",
+    "lastChanged": 2024,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": "=D5+5",
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Oljeskift motor",
+    "interval": "10 000 km/1 år",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "Bruk kun VW 502.00/505.00 godkjent 5W-40 (eller 0W-40 for norske vintre). Med V10 turbo, vurder 7 500 km-intervall."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Tennplugger",
+    "interval": "50-60 000 km",
+    "lastChanged": "08.25",
+    "kmAtLastChange": 183000,
+    "nextRecommendedKm": 238000,
+    "status": "🟢 OK",
+    "comments": "Ikke overtrekk ved montering – pluggen kan løsne fra topplokket! Anbefalt bytte hvert 40 000 km på V10. Byttet 08.25 ✓"
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Luftfilter",
+    "interval": "20-30 000 km",
+    "lastChanged": "08.25",
+    "kmAtLastChange": 183000,
+    "nextRecommendedKm": 208000,
+    "status": "🟢 OK",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Kupefilter",
+    "interval": "20 000 km/1 år",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Drivstoffilter",
+    "interval": "60 000 km",
+    "lastChanged": "08.25",
+    "kmAtLastChange": 183000,
+    "nextRecommendedKm": 243000,
+    "status": "🟢 OK",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Automatkasseolje (ZF 6HP26A)",
+    "interval": "60-80 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "Bruk KUN ZF Lifeguard Fluid 6. Anbefalt kortere intervall (40-50 000 km) for RS6-bruk."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Differensialolje foran/bak",
+    "interval": "60 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Registerkjede (inspeksjon)",
+    "interval": "200 000 km (inspeksjon)",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "Lytt etter rattle ved kaldstart – kjedespenner-problemer er kjent. Ikke vent til 200 000 km om det er lyder."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Dynamo-reim",
+    "interval": "80-100 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Reimhjul/strammehjul",
+    "interval": "80-100 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Kjølevæske",
+    "interval": "3-5 år",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Servoolje",
+    "interval": "60 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "PCV-ventil",
+    "interval": "80-100 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "Oljetåkeseparator/PCV-problemer gir oljelekkasje og høyt oljeforbruk. Viktig å ikke overse."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Lambda-sonder",
+    "interval": "120-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Motorfester",
+    "interval": "100-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Intercooler-slanger",
+    "interval": "80-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Turbo bypass-ventil (Diverter valve)",
+    "interval": "60-80 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Vakumslanger",
+    "interval": "80-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Multireim (serpentinereim)",
+    "interval": "60-80 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Transmisjonsfester",
+    "interval": "100-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Startmotor / Dynamo",
+    "interval": "150 000-200 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "MAF / MAP-sensorer",
+    "interval": "60 000-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "Kjent for å svikte på C6-plattformen. Ha på radaren."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Vannpumpe / Termostat",
+    "interval": "80 000-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Injectors (innsprøytningsdyser)",
+    "interval": "120 000-180 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Eksosanlegg oppheng",
+    "interval": "80 000-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Katalysatorer / lambda-sonder",
+    "interval": "150 000-200 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Oljepumpe O-ringer",
+    "interval": "Aldersbasert (~10 år / 150 000 km)",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "🔴 Forfalt",
+    "comments": "⚠️ KRITISK C6 RS6-spesifikk feil! Bilen er 17 år – bør inspiseres/byttes proaktivt. Krever ikke motordemontering. Ca. 1 000 EUR."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Kjølevæske-rør (plast)",
+    "interval": "Aldersbasert (~150 000 km)",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "🔴 Forfalt",
+    "comments": "⚠️ KRITISK C6 RS6-spesifikk feil! Plastrør sprekker med alder. Krever motordemontering å bytte – svært kostbart. Inspiser nøye."
+  },
+  {
+    "category": "Motor / Drivverk",
+    "part": "Turboer (x2)",
+    "interval": "150 000-200 000 km (inspeksjon)",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "V10 TFSI har to turbos. Lever lenge med god oljeskift-rutine. Sjekk for oljeforbruk og lekasje ved service."
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bremseklosser foran",
+    "interval": "30-50 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": "RS6-realistisk intervall er 15-25 000 km ved sportslig kjøring – kortere enn standard anslag."
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bremseklosser bak",
+    "interval": "40-60 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bremseskiver foran",
+    "interval": "60-80 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bremseskiver bak",
+    "interval": "80-100 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Dekk",
+    "interval": "20-40 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Støtdempere foran",
+    "interval": "100-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Støtdempere bak",
+    "interval": "100-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Stabilisatorstag og foringer",
+    "interval": "60-80 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bærearmer foran",
+    "interval": "80-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bærearmer bak",
+    "interval": "80-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Hjullager foran",
+    "interval": "120-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Hjullager bak",
+    "interval": "120-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bremsevæske",
+    "interval": "2 år",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Bakre diff-fester",
+    "interval": "100-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Styrestag / endeledd",
+    "interval": "80 000-120 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Drivaksling / CV-ledd",
+    "interval": "100 000-150 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  },
+  {
+    "category": "Understell / Bremser",
+    "part": "Kontrollarmer bak / bærearmer",
+    "interval": "120 000-180 000 km",
+    "lastChanged": null,
+    "kmAtLastChange": null,
+    "nextRecommendedKm": null,
+    "status": "⚪ Ukjent",
+    "comments": null
+  }
+]
