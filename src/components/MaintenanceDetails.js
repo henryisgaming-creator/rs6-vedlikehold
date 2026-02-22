@@ -25,14 +25,15 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
     let intervalYears = editedItem.intervalYears || 0;
     
     if (!intervalKm && editedItem.interval) {
-      // Try "XXX YYY km" format first (Norwegian: space-separated thousands like "10 000 km" or "50-60 000 km")
-      let spacedMatch = editedItem.interval.match(/.*?(\d+)\s+(\d+)\s*km/);
-      if (spacedMatch) {
-        intervalKm = parseInt(spacedMatch[1]) * 1000 + parseInt(spacedMatch[2]);
+      // Look for patterns with explicit thousands like "60 000 km" or "120 000 km"
+      // This handles ranges like "50-60 000 km" by matching the last (upper) number
+      let match = editedItem.interval.match(/(\d+)\s*000\s*km/);
+      if (match) {
+        intervalKm = parseInt(match[1]) * 1000;
       } else {
-        // Try "XXX km" format
-        let kmMatch = editedItem.interval.match(/(\d+)\s*km/);
-        if (kmMatch) intervalKm = parseInt(kmMatch[1]);
+        // Fallback: plain numbers like "100 km"
+        match = editedItem.interval.match(/(\d+)\s*km/);
+        if (match) intervalKm = parseInt(match[1]);
       }
     }
     
