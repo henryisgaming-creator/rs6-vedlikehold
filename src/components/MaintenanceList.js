@@ -37,13 +37,6 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
     return itemsWithUrgency.sort((a, b) => urgencyOrder[a.status] - urgencyOrder[b.status]);
   }, [items, currentKm]);
 
-  // Calculate total cost for an item
-  const getItemTotalCost = (category, part) => {
-    const key = `${category}|${part}`;
-    const records = serviceHistory[key] || [];
-    return records.reduce((sum, record) => sum + (record.cost || 0), 0);
-  };
-
   return (
     <div className="maintenance-list">
       {sortedItems.length === 0 ? (
@@ -56,7 +49,6 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
             const icon = getCategoryIcon(item.category);
             const categoryColor = getCategoryColor(item.category);
             const urgencyColor = getUrgencyColor(status);
-            const totalCost = getItemTotalCost(item.category, item.part);
             
             // Parse intervals from string if needed
             let intervalKm = item.intervalKm || 0;
