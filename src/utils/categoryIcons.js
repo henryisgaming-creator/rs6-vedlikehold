@@ -1,38 +1,41 @@
 // Category icons and styling
 export const getCategoryIcon = (category) => {
-  const icons = {
-    'Motor': '🔧',
-    'Transmission': '⚙️',
-    'Suspension': '🚗',
-    'Brakes': '🛑',
-    'Electrical': '⚡',
-    'Cooling': '❄️',
-    'Fuel System': '⛽',
-    'Exhaust': '💨',
-    'Interior': '🪑',
-    'Exterior': '🎨',
-    'Maintenance': '🛠️',
-    'Custom': '⭐'
-  };
-  return icons[category] || '📋';
+  // Try to match by keywords to support multiple languages / naming
+  if (!category) return '📋';
+  const c = category.toLowerCase();
+  if (c.includes('motor') || c.includes('driv') || c.includes('engine')) return '🔧';
+  if (c.includes('trans') || c.includes('gear')) return '⚙️';
+  if (c.includes('susp') || c.includes('fjær') || c.includes('støtdemper')) return '🚗';
+  if (c.includes('brem') || c.includes('brake')) return '🛑';
+  if (c.includes('elektr') || c.includes('elektrisk') || c.includes('elec')) return '⚡';
+  if (c.includes('køl') || c.includes('cool')) return '❄️';
+  if (c.includes('drivstoff') || c.includes('fuel') || c.includes('tank')) return '⛽';
+  if (c.includes('eksos') || c.includes('exhaust')) return '💨';
+  if (c.includes('interi') || c.includes('interior')) return '🪑';
+  if (c.includes('eksteri') || c.includes('exteri') || c.includes('paint')) return '🎨';
+  if (c.includes('tenn') || c.includes('coil') || c.includes('spark') || c.includes('plug')) return '🔩';
+  if (c.includes('vedlikehold') || c.includes('maintenance')) return '🛠️';
+  if (c.includes('custom') || c.includes('egendefinert')) return '⭐';
+
+  return '📋';
 };
 
 export const getCategoryColor = (category) => {
-  const colors = {
-    'Motor': '#ef4444',        // Red
-    'Transmission': '#f97316',  // Orange
-    'Suspension': '#eab308',    // Yellow
-    'Brakes': '#dc2626',        // Dark Red
-    'Electrical': '#06b6d4',    // Cyan
-    'Cooling': '#0ea5e9',       // Sky Blue
-    'Fuel System': '#f43f5e',   // Rose
-    'Exhaust': '#8b5cf6',       // Purple
-    'Interior': '#a16207',      // Brown
-    'Exterior': '#0d9488',      // Teal
-    'Maintenance': '#6366f1',   // Indigo
-    'Custom': '#10b981'         // Green
-  };
-  return colors[category] || '#3b82f6';
+  if (!category) return '#3b82f6';
+  const c = category.toLowerCase();
+  if (c.includes('motor') || c.includes('driv')) return '#ef4444';
+  if (c.includes('trans') || c.includes('gear')) return '#f97316';
+  if (c.includes('susp') || c.includes('fjær') || c.includes('støtdemper')) return '#eab308';
+  if (c.includes('brem') || c.includes('brake')) return '#dc2626';
+  if (c.includes('elektr') || c.includes('elektrisk')) return '#06b6d4';
+  if (c.includes('køl') || c.includes('cool')) return '#0ea5e9';
+  if (c.includes('drivstoff') || c.includes('fuel')) return '#f43f5e';
+  if (c.includes('eksos') || c.includes('exhaust')) return '#8b5cf6';
+  if (c.includes('interi')) return '#a16207';
+  if (c.includes('eksteri') || c.includes('exteri')) return '#0d9488';
+  if (c.includes('vedlikehold') || c.includes('maintenance')) return '#6366f1';
+  if (c.includes('custom') || c.includes('egendefinert')) return '#10b981';
+  return '#3b82f6';
 };
 
 export const getStatusIcon = (status) => {

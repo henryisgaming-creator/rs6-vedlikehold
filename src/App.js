@@ -21,6 +21,7 @@ function App() {
   const [selectedItemForHistory, setSelectedItemForHistory] = useState(null);
   const [showAddServiceForm, setShowAddServiceForm] = useState(false);
   const [customServices, setCustomServices] = useState([]);
+  const [itemOverrides, setItemOverrides] = useState({});
   const [activeTab, setActiveTab] = useState('maintenance');
   const [showNewItemModal, setShowNewItemModal] = useState(false);
 
@@ -29,10 +30,12 @@ function App() {
     const saved = localStorage.getItem('serviceHistory');
     const savedKm = localStorage.getItem('currentKm');
     const savedCustom = localStorage.getItem('customServices');
+    const savedOverrides = localStorage.getItem('itemOverrides');
     
     if (saved) setServiceHistory(JSON.parse(saved));
     if (savedKm) setCurrentKm(savedKm);
     if (savedCustom) setCustomServices(JSON.parse(savedCustom));
+    if (savedOverrides) setItemOverrides(JSON.parse(savedOverrides));
   }, []);
 
   // Save to localStorage when changes
@@ -49,28 +52,40 @@ function App() {
     localStorage.setItem('customServices', JSON.stringify(customServices));
   }, [customServices]);
 
+  useEffect(() => {
+    localStorage.setItem('itemOverrides', JSON.stringify(itemOverrides));
+  }, [itemOverrides]);
+
   // Apply dark mode to body on mount
   useEffect(() => {
     document.body.className = 'dark-mode';
   }, []);
 
   // Get unique categories
-  const categories = ['All', ...new Set(maintenanceData.map(item => item.category))];
+  // Build display list combining built-in maintenance and custom services
+  const combinedList = [...maintenanceData, ...customServices].map(it => {
+    const key = `${it.category || 'custom'}|${it.part}`;
+    if (itemOverrides && itemOverrides[key]) {
+      return { ...it, ...itemOverrides[key] };
+    }
+    return it;
+  });
 
-  // Get unique statuses
-  const statuses = ['All', ...new Set(maintenanceData.map(item => item.status))];
+  // Get unique categories and statuses
+  const categories = ['All', ...new Set(combinedList.map(item => item.category))];
+  const statuses = ['All', ...new Set(combinedList.map(item => item.status || ''))];
 
   // Filter data based on selected category, status, and search term
   const filteredData = useMemo(() => {
-    return maintenanceData.filter(item => {
+    return combinedList.filter(item => {
       const categoryMatch = selectedCategory === 'All' || item.category === selectedCategory;
-      const statusMatch = selectedStatus === 'All' || item.status === selectedStatus;
+      const statusMatch = selectedStatus === 'All' || (item.status || '') === selectedStatus;
       const searchMatch = searchTerm === '' || 
-        item.part.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase());
+        (item.part || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.category || '').toLowerCase().includes(searchTerm.toLowerCase());
       return categoryMatch && statusMatch && searchMatch;
     });
-  }, [selectedCategory, selectedStatus, searchTerm]);
+  }, [combinedList, selectedCategory, selectedStatus, searchTerm]);
 
   const handleSelectItem = (item) => {
     setSelectedItem(item);
@@ -89,6 +104,22 @@ function App() {
     });
   };
 
+  const handleDeleteServiceRecord = (key, index) => {
+    const existing = serviceHistory[key] || [];
+    const updated = existing.filter((_, i) => i !== index);
+    const copy = { ...serviceHistory };
+    if (updated.length > 0) copy[key] = updated; else delete copy[key];
+    setServiceHistory(copy);
+  };
+
+  const handleUpdateServiceRecord = (key, index, payload) => {
+    const existing = serviceHistory[key] || [];
+    if (!existing[index]) return;
+    const updated = existing.slice();
+    updated[index] = payload;
+    setServiceHistory({ ...serviceHistory, [key]: updated });
+  };
+
   const handleAddCustomService = (service) => {
     // service should have: part, interval, intervalKm, intervalYears, lastChanged, kmAtLastChange, notes, images
     setCustomServices([...customServices, { ...service, id: Date.now() }]);
@@ -103,6 +134,11 @@ function App() {
   const handleCloseHistory = () => {
     setShowHistoryModal(false);
     setSelectedItemForHistory(null);
+  };
+
+  const handleSaveItemOverride = (updatedItem) => {
+    const key = `${updatedItem.category || 'custom'}|${updatedItem.part}`;
+    setItemOverrides(prev => ({ ...prev, [key]: { ...(prev[key] || {}), ...updatedItem } }));
   };
 
   return (
@@ -176,6 +212,7 @@ function App() {
                 onAddServiceRecord={handleAddServiceRecord}
                 onOpenHistory={handleOpenHistory}
                 serviceHistory={serviceHistory}
+                onSaveEdits={handleSaveItemOverride}
               />
             ) : (
               <>
@@ -218,6 +255,8 @@ function App() {
           history={serviceHistory}
           onClose={handleCloseHistory}
           onAddRecord={handleAddServiceRecord}
+          onDeleteRecord={handleDeleteServiceRecord}
+          onUpdateRecord={handleUpdateServiceRecord}
         />
       )}
 

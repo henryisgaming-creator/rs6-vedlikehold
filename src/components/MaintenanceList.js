@@ -21,11 +21,18 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
         if (yearMatch) intervalYears = parseFloat(yearMatch[1]);
       }
       
+      // If we have service history for this item, use its latest record as the source of lastChanged/lastKm
+      const key = `${item.category || 'custom'}|${item.part}`;
+      const hist = serviceHistory && serviceHistory[key] ? serviceHistory[key] : null;
+      const latest = hist && hist.length ? hist[hist.length - 1] : null;
+      const lastChangedSource = latest && latest.date ? latest.date : item.lastChanged;
+      const lastKmSource = latest && latest.km ? parseInt(latest.km) : (item.kmAtLastChange ? parseInt(item.kmAtLastChange) : 0);
+
       const status = getUrgencyStatus(
-        item.lastChanged,
+        lastChangedSource,
         intervalYears,
         parseInt(currentKm) || 0,
-        parseInt(item.kmAtLastChange) || 0,
+        lastKmSource || 0,
         intervalKm
       );
 
@@ -35,7 +42,7 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
     // Sort: Overdue first, then Due Soon, then OK
     const urgencyOrder = { 'Overdue': 0, 'Due Soon': 1, 'OK': 2, 'New': 3 };
     return itemsWithUrgency.sort((a, b) => urgencyOrder[a.status] - urgencyOrder[b.status]);
-  }, [items, currentKm]);
+  }, [items, currentKm, serviceHistory]);
 
   return (
     <div className="maintenance-list">

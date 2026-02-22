@@ -30,6 +30,7 @@ function AddServiceForm({ onAddService, onClose }) {
       : formData.interval;
 
     onAddService({
+      category: formData.category || 'Egendefinert',
       part: formData.part,
       interval,
       intervalKm: formData.intervalKm ? parseInt(formData.intervalKm) : null,
@@ -76,6 +77,18 @@ function AddServiceForm({ onAddService, onClose }) {
               onChange={handleChange}
               placeholder="f.eks. Spark plugs, Oil change, etc."
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="category">Kategori:</label>
+            <input
+              id="category"
+              type="text"
+              name="category"
+              value={formData.category || ''}
+              onChange={handleChange}
+              placeholder="f.eks. Motor, Elektrisk, Egendefinert"
             />
           </div>
 

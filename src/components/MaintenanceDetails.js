@@ -1,11 +1,8 @@
-import React, { useRef, useState } from 'react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import React, { useState } from 'react';
 import EditItemModal from './EditItemModal';
 import './MaintenanceDetails.css';
 
-function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOpenHistory, serviceHistory }) {
-  const contentRef = useRef();
+function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOpenHistory, serviceHistory, onSaveEdits }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedItem, setEditedItem] = useState(item);
 
@@ -22,11 +19,16 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   const calculateProgress = () => {
     let percentage = null;
     let display = null;
-    
+    // If there's service history, prefer the most recent record as last change
+    const historyKey = `${editedItem.category || 'custom'}|${editedItem.part}`;
+    const hist = serviceHistory && serviceHistory[historyKey] ? serviceHistory[historyKey] : null;
+    const latestRecord = hist && hist.length ? hist[hist.length - 1] : null;
+
     // Calculate based on km if available
-    if (editedItem.intervalKm && editedItem.kmAtLastChange && currentKm) {
+    const sourceKmLast = latestRecord && latestRecord.km ? parseInt(latestRecord.km) : (editedItem.kmAtLastChange ? parseInt(editedItem.kmAtLastChange) : null);
+    if (editedItem.intervalKm && sourceKmLast && currentKm) {
       const kmNum = parseInt(currentKm);
-      const lastKm = parseInt(editedItem.kmAtLastChange);
+      const lastKm = sourceKmLast;
       const interval = parseInt(editedItem.intervalKm);
       const kmUsed = kmNum - lastKm;
       percentage = Math.min(100, Math.max(0, (kmUsed / interval) * 100));
@@ -34,8 +36,9 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
       display = kmRemaining > 0 ? `${kmRemaining} km igjen` : `${Math.abs(kmRemaining)} km overskredet`;
     }
     // Calculate based on years if km not available
-    else if (editedItem.intervalYears && editedItem.lastChanged) {
-      const lastDate = new Date(editedItem.lastChanged);
+    else if (editedItem.intervalYears && (latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged)) {
+      const sourceDate = latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged;
+      const lastDate = new Date(sourceDate);
       if (!isNaN(lastDate.getTime())) {
         const today = new Date();
         const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
@@ -53,51 +56,30 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
     return null;
   };
 
-  const handleExportPDF = async () => {
-    const element = contentRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff'
-    });
-    
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210;
-    const pageHeight = 295;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
-    let position = 0;
-    
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-    
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-    
-    pdf.save(`${item.part}.pdf`);
-  };
-
   const progressData = calculateProgress();
   const key = `${editedItem.category || 'custom'}|${editedItem.part}`;
   const hasHistory = serviceHistory[key] && serviceHistory[key].length > 0;
 
   const handleEditSave = (updatedItem) => {
     setEditedItem(updatedItem);
-    // In a real app, you would save this to localStorage or a server
-    // For now, just update the local state
+    // Persist edits so comments/interval changes survive reloads
+    try {
+      const key = `${updatedItem.category || 'custom'}|${updatedItem.part}`;
+      const raw = localStorage.getItem('itemOverrides');
+      const overrides = raw ? JSON.parse(raw) : {};
+      overrides[key] = { ...(overrides[key] || {}), ...updatedItem };
+      localStorage.setItem('itemOverrides', JSON.stringify(overrides));
+    } catch (err) {
+      // ignore storage errors
+    }
+    if (typeof onSaveEdits === 'function') onSaveEdits(updatedItem);
   };
 
   return (
     <div className="maintenance-details">
       <button className="back-button" onClick={onClose}>← Tilbake</button>
       
-      <div ref={contentRef} className="details-content-wrapper">
+      <div className="details-content-wrapper">
         <div className="details-header">
           <h2>{editedItem.part}</h2>
           <span className="details-category">{editedItem.category}</span>
@@ -177,12 +159,6 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
           onClick={() => onOpenHistory(editedItem)}
         >
           📋 Historikk {hasHistory && <span className="badge">{serviceHistory[key].length}</span>}
-        </button>
-        <button 
-          className="action-btn pdf-btn"
-          onClick={handleExportPDF}
-        >
-          📄 Eksporter PDF
         </button>
       </div>
 

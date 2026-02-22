@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './ServiceHistoryModal.css';
 
-function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
+function ServiceHistoryModal({ item, history, onClose, onAddRecord, onDeleteRecord, onUpdateRecord }) {
   const [showForm, setShowForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     km: '',
@@ -56,7 +57,12 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
   const handleAddRecord = (e) => {
     e.preventDefault();
     if (formData.date && formData.km) {
-      onAddRecord(item, formData.date, formData.km, formData.notes, formData.images, parseFloat(formData.cost) || 0);
+      const payload = { date: formData.date, km: formData.km, notes: formData.notes, images: formData.images, cost: parseFloat(formData.cost) || 0 };
+      if (editingIndex !== null && typeof onUpdateRecord === 'function') {
+        onUpdateRecord(key, editingIndex, payload);
+      } else {
+        onAddRecord(item, formData.date, formData.km, formData.notes, formData.images, parseFloat(formData.cost) || 0);
+      }
       setFormData({
         date: new Date().toISOString().split('T')[0],
         km: '',
@@ -66,6 +72,7 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
       });
       setShowForm(false);
       setSavedMessage(true);
+      setEditingIndex(null);
     }
   };
 
@@ -110,11 +117,30 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
             <div className="history-list">
               {records.map((record, idx) => (
                 <div key={idx} className="history-item">
-                  <div className="history-date">{formatDate(record.date)}</div>
-                  <div className="history-km">{record.km} km</div>
-                  {record.cost && record.cost > 0 && (
-                    <div className="history-cost">💰 {record.cost.toLocaleString('no-NO')} kr</div>
-                  )}
+                  <div style={{display: 'flex', justifyContent: 'space-between', gap: 8}}>
+                    <div>
+                      <div className="history-date">{formatDate(record.date)}</div>
+                      <div className="history-km">{record.km} km</div>
+                    </div>
+                    <div style={{display: 'flex', gap: 8, alignItems: 'center'}}>
+                      {record.cost && record.cost > 0 && (
+                        <div className="history-cost">💰 {record.cost.toLocaleString('no-NO')} kr</div>
+                      )}
+                      <button className="btn btn-secondary" onClick={() => onDeleteRecord && onDeleteRecord(key, idx)}>Slett</button>
+                      <button className="btn btn-secondary" onClick={() => {
+                        setFormData({
+                          date: record.date,
+                          km: record.km,
+                          notes: record.notes || '',
+                          cost: record.cost || '',
+                          images: record.images || []
+                        });
+                        setShowForm(true);
+                        setEditingIndex(idx);
+                      }}>Rediger</button>
+                    </div>
+                  </div>
+
                   {record.notes && <div className="history-notes">{record.notes}</div>}
                   {record.images && record.images.length > 0 && (
                     <div className="history-images">
