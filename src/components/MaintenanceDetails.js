@@ -36,9 +36,26 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
       display = kmRemaining > 0 ? `${kmRemaining} km igjen` : `${Math.abs(kmRemaining)} km overskredet`;
     }
     // Calculate based on years if km not available
-    else if (editedItem.intervalYears && (latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged)) {
+    else if (editedItem.intervalYears) {
       const sourceDate = latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged;
-      const lastDate = new Date(sourceDate);
+      
+      // Parse date - handle both standard and MM.YY formats
+      let lastDate = new Date(sourceDate);
+      
+      // If standard parsing failed, try MM.YY format
+      if (isNaN(lastDate.getTime()) && typeof sourceDate === 'string' && sourceDate.includes('.')) {
+        const parts = sourceDate.split('.');
+        if (parts.length === 2 && parts[0].length <= 2 && parts[1].length <= 2) {
+          const month = parseInt(parts[0]);
+          let year = parseInt(parts[1]);
+          // Assume 20xx for 2-digit years
+          if (year < 100) year += 2000;
+          if (month >= 1 && month <= 12) {
+            lastDate = new Date(year, month - 1, 1);
+          }
+        }
+      }
+      
       if (!isNaN(lastDate.getTime())) {
         const today = new Date();
         const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
