@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import './App.css';
 import MaintenanceList from './components/MaintenanceList';
 import FilterBar from './components/FilterBar';
@@ -33,10 +33,26 @@ function App() {
     const savedOverrides = localStorage.getItem('itemOverrides');
     
     if (saved) setServiceHistory(JSON.parse(saved));
-    if (savedKm) setCurrentKm(savedKm);
+    // restore last entered km (keep as string so input updates cleanly)
+    if (savedKm !== null && savedKm !== undefined) setCurrentKm(savedKm);
     if (savedCustom) setCustomServices(JSON.parse(savedCustom));
     if (savedOverrides) setItemOverrides(JSON.parse(savedOverrides));
   }, []);
+
+  // Ref for km input so we can autofocus/select last entered value
+  const kmInputRef = useRef(null);
+
+  // Focus and select KM input when maintenance tab becomes active
+  useEffect(() => {
+    if (activeTab === 'maintenance' && kmInputRef.current) {
+      try {
+        kmInputRef.current.focus();
+        kmInputRef.current.select();
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [activeTab]);
 
   // Save to localStorage when changes
   useEffect(() => {
@@ -181,6 +197,7 @@ function App() {
             <label htmlFor="current-km">Aktuell km:</label>
             <input
               id="current-km"
+              ref={kmInputRef}
               type="number"
               value={currentKm}
               onChange={(e) => setCurrentKm(e.target.value)}
