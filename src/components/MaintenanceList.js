@@ -1,66 +1,112 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import './MaintenanceList.css';
+import { getCategoryIcon, getCategoryColor, getUrgencyStatus, getUrgencyColor, calculateDaysUntilDue } from '../utils/categoryIcons';
 
-function MaintenanceList({ items, onSelectItem, currentKm }) {
-  const getStatusColor = (status) => {
-    if (status.includes('🟢')) return '#4ade80';
-    if (status.includes('🟡')) return '#facc15';
-    if (status.includes('🔴')) return '#ef4444';
-    return '#6b7280';
-  };
+function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }) {
+  // Calculate urgency and sort items
+  const sortedItems = useMemo(() => {
+    const itemsWithUrgency = items.map(item => {
+      const status = getUrgencyStatus(
+        item.lastChanged,
+        item.intervalYears || 1,
+        parseInt(currentKm) || 0,
+        parseInt(item.kmAtLastChange) || 0,
+        parseInt(item.intervalKm) || 10000
+      );
 
-  const getUrgency = (item, km) => {
-    if (!km || !item.nextRecommendedKm) return 'unknown';
-    const kmNum = parseInt(km);
-    const nextKm = parseInt(item.nextRecommendedKm);
-    const remaining = nextKm - kmNum;
-    
-    if (remaining <= 0) return 'overdue';
-    if (remaining <= 5000) return 'urgent';
-    if (remaining <= 10000) return 'soon';
-    return 'ok';
+      return { item, status };
+    });
+
+    // Sort: Overdue first, then Due Soon, then OK
+    const urgencyOrder = { 'Overdue': 0, 'Due Soon': 1, 'OK': 2, 'New': 3 };
+    return itemsWithUrgency.sort((a, b) => urgencyOrder[a.status] - urgencyOrder[b.status]);
+  }, [items, currentKm]);
+
+  // Calculate total cost for an item
+  const getItemTotalCost = (category, part) => {
+    const key = `${category}|${part}`;
+    const records = serviceHistory[key] || [];
+    return records.reduce((sum, record) => sum + (record.cost || 0), 0);
   };
 
   return (
     <div className="maintenance-list">
-      {items.length === 0 ? (
-        <div className="no-items">Ingen varslinger funnet</div>
+      {sortedItems.length === 0 ? (
+        <div className="no-items">
+          <p>📭 Ingen vedlikehold regnet opp</p>
+        </div>
       ) : (
-        items.map((item, index) => {
-          const urgency = getUrgency(item, currentKm);
-          return (
-            <div
-              key={index}
-              className={`maintenance-item urgency-${urgency}`}
-              onClick={() => onSelectItem(item)}
-            >
-              <div className="item-header">
-                <h3>{item.part}</h3>
-                <span className="status-badge" style={{ backgroundColor: getStatusColor(item.status) }}>
-                  {item.status}
-                </span>
-              </div>
-              <p className="item-category">{item.category}</p>
-              <p className="item-interval">{item.interval}</p>
-              {item.nextRecommendedKm && currentKm && (
-                <div className="item-progress">
-                  <p className="urgency-text urgency-{urgency}">
-                    {(() => {
-                      const remaining = parseInt(item.nextRecommendedKm) - parseInt(currentKm);
-                      if (remaining <= 0) {
-                        return `⚠️ Overskredet med ${Math.abs(remaining)} km`;
-                      } else if (remaining <= 5000) {
-                        return `🔴 ${remaining} km igjen`;
-                      } else {
-                        return `${remaining} km igjen`;
-                      }
-                    })()}
-                  </p>
+        <div className="items-container">
+          {sortedItems.map(({ item, status }, index) => {
+            const icon = getCategoryIcon(item.category);
+            const categoryColor = getCategoryColor(item.category);
+            const urgencyColor = getUrgencyColor(status);
+            const totalCost = getItemTotalCost(item.category, item.part);
+            const calc = calculateDaysUntilDue(
+              item.lastChanged,
+              item.intervalYears || 1,
+              parseInt(currentKm) || 0,
+              parseInt(item.kmAtLastChange) || 0,
+              parseInt(item.intervalKm) || 10000
+            );
+
+            return (
+              <div
+                key={index}
+                className={`maintenance-item urgency-${status.toLowerCase().replace(' ', '-')}`}
+                onClick={() => onSelectItem(item)}
+                style={{ borderLeftColor: urgencyColor }}
+              >
+                <div className="item-icon" style={{ backgroundColor: categoryColor, color: 'white' }}>
+                  {icon}
                 </div>
-              )}
-            </div>
-          );
-        })
+                
+                <div className="item-content">
+                  <div className="item-header">
+                    <h3>{item.part}</h3>
+                    <span className="status-badge" style={{ backgroundColor: urgencyColor }}>
+                      {status}
+                    </span>
+                  </div>
+                  
+                  <p className="item-category">{item.category}</p>
+                  
+                  {item.interval && (
+                    <p className="item-interval">📅 {item.interval}</p>
+                  )}
+
+                  {calc && (
+                    <div className="item-progress">
+                      <div className="progress-info">
+                        {status === 'Overdue' && (
+                          <span className="urgency-text overdue">
+                            ⚠️ {Math.abs(calc.kmDue)} km overskredet
+                          </span>
+                        )}
+                        {status === 'Due Soon' && (
+                          <span className="urgency-text due-soon">
+                            {calc.kmDue > 0 ? `${calc.kmDue} km igjen` : `${Math.abs(calc.daysDue)} dager overskredet`}
+                          </span>
+                        )}
+                        {status === 'OK' && (
+                          <span className="urgency-text ok">
+                            ✅ {calc.kmDue} km igjen
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {totalCost > 0 && (
+                    <div className="item-cost">
+                      💸 {totalCost.toLocaleString('no-NO')} kr
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

@@ -4,6 +4,8 @@ import MaintenanceList from './components/MaintenanceList';
 import FilterBar from './components/FilterBar';
 import MaintenanceDetails from './components/MaintenanceDetails';
 import ServiceHistoryModal from './components/ServiceHistoryModal';
+import AddServiceForm from './components/AddServiceForm';
+import CostSummary from './components/CostSummary';
 import maintenanceData from './data/maintenance.json';
 
 function App() {
@@ -14,14 +16,18 @@ function App() {
   const [serviceHistory, setServiceHistory] = useState({});
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedItemForHistory, setSelectedItemForHistory] = useState(null);
+  const [showAddServiceForm, setShowAddServiceForm] = useState(false);
+  const [customServices, setCustomServices] = useState([]);
 
   // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('serviceHistory');
     const savedKm = localStorage.getItem('currentKm');
+    const savedCustom = localStorage.getItem('customServices');
     
     if (saved) setServiceHistory(JSON.parse(saved));
     if (savedKm) setCurrentKm(savedKm);
+    if (savedCustom) setCustomServices(JSON.parse(savedCustom));
   }, []);
 
   // Save to localStorage when changes
@@ -32,6 +38,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('currentKm', currentKm);
   }, [currentKm]);
+
+  // Save custom services to localStorage
+  useEffect(() => {
+    localStorage.setItem('customServices', JSON.stringify(customServices));
+  }, [customServices]);
 
   // Apply dark mode to body on mount
   useEffect(() => {
@@ -61,13 +72,19 @@ function App() {
     setSelectedItem(null);
   };
 
-  const handleAddServiceRecord = (item, date, km, notes) => {
-    const key = `${item.category}|${item.part}`;
+  const handleAddServiceRecord = (item, date, km, notes, images = [], cost = 0) => {
+    const key = `${item.category || 'custom'}|${item.part}`;
     const existing = serviceHistory[key] || [];
     setServiceHistory({
       ...serviceHistory,
-      [key]: [...existing, { date, km, notes }]
+      [key]: [...existing, { date, km, notes, images, cost }]
     });
+  };
+
+  const handleAddCustomService = (service) => {
+    // service should have: part, interval, intervalKm, intervalYears, lastChanged, kmAtLastChange, notes, images
+    setCustomServices([...customServices, { ...service, id: Date.now() }]);
+    setShowAddServiceForm(false);
   };
 
   const handleOpenHistory = (item) => {
@@ -85,6 +102,13 @@ function App() {
       <header className="app-header">
         <div className="header-top">
           <h1>RS6 Vedlikehold</h1>
+          <button 
+            className="btn-add-service"
+            onClick={() => setShowAddServiceForm(true)}
+            title="Legg til egendefinert vedlikehold"
+          >
+            + Legg til
+          </button>
         </div>
         <div className="km-input">
           <label htmlFor="current-km">Aktuell km:</label>
@@ -118,11 +142,15 @@ function App() {
             serviceHistory={serviceHistory}
           />
         ) : (
-          <MaintenanceList 
-            items={filteredData}
-            onSelectItem={handleSelectItem}
-            currentKm={currentKm}
-          />
+          <>
+            <CostSummary serviceHistory={serviceHistory} />
+            <MaintenanceList 
+              items={filteredData}
+              onSelectItem={handleSelectItem}
+              currentKm={currentKm}
+              serviceHistory={serviceHistory}
+            />
+          </>
         )}
       </main>
 
@@ -132,6 +160,13 @@ function App() {
           history={serviceHistory}
           onClose={handleCloseHistory}
           onAddRecord={handleAddServiceRecord}
+        />
+      )}
+
+      {showAddServiceForm && (
+        <AddServiceForm
+          onAddService={handleAddCustomService}
+          onClose={() => setShowAddServiceForm(false)}
         />
       )}
     </div>

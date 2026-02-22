@@ -1,10 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import EditItemModal from './EditItemModal';
 import './MaintenanceDetails.css';
 
 function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOpenHistory, serviceHistory }) {
   const contentRef = useRef();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedItem, setEditedItem] = useState(item);
 
   const parseDate = (dateValue) => {
     if (!dateValue) return 'Ikke registrert';
@@ -64,33 +67,39 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   const key = `${item.category}|${item.part}`;
   const hasHistory = serviceHistory[key] && serviceHistory[key].length > 0;
 
+  const handleEditSave = (updatedItem) => {
+    setEditedItem(updatedItem);
+    // In a real app, you would save this to localStorage or a server
+    // For now, just update the local state
+  };
+
   return (
     <div className="maintenance-details">
       <button className="back-button" onClick={onClose}>← Tilbake</button>
       
       <div ref={contentRef} className="details-content-wrapper">
         <div className="details-header">
-          <h2>{item.part}</h2>
-          <span className="details-category">{item.category}</span>
+          <h2>{editedItem.part}</h2>
+          <span className="details-category">{editedItem.category}</span>
         </div>
 
         <div className="details-content">
           <div className="detail-section">
             <h3>Anbefalt intervall</h3>
-            <p className="detail-value">{item.interval}</p>
+            <p className="detail-value">{editedItem.intervalKm ? `${editedItem.intervalKm} km` : ''} {editedItem.intervalYears ? `/ ${editedItem.intervalYears} år` : ''}</p>
           </div>
 
           <div className="detail-section">
             <h3>Sist byttet</h3>
-            <p className="detail-value">{parseDate(item.lastChanged)}</p>
-            {item.kmAtLastChange && (
-              <p className="detail-subtext">ved {item.kmAtLastChange} km</p>
+            <p className="detail-value">{parseDate(editedItem.lastChanged)}</p>
+            {editedItem.kmAtLastChange && (
+              <p className="detail-subtext">ved {editedItem.kmAtLastChange} km</p>
             )}
           </div>
 
           <div className="detail-section">
             <h3>Neste anbefalte bytte</h3>
-            <p className="detail-value">{item.nextRecommendedKm || 'Ikke beregnet'} km</p>
+            <p className="detail-value">{editedItem.nextRecommendedKm || 'Ikke beregnet'} km</p>
             {progressData && (
               <>
                 <div className="progress-bar">
@@ -110,13 +119,20 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
 
           <div className="detail-section">
             <h3>Status</h3>
-            <p className="detail-value">{item.status}</p>
+            <p className="detail-value">{editedItem.status}</p>
           </div>
 
-          {item.comments && (
+          {editedItem.comments && (
             <div className="detail-section">
               <h3>Kommentarer</h3>
-              <p className="detail-value comments">{item.comments}</p>
+              <p className="detail-value comments">{editedItem.comments}</p>
+            </div>
+          )}
+
+          {editedItem.notes && (
+            <div className="detail-section">
+              <h3>Notater</h3>
+              <p className="detail-value">{editedItem.notes}</p>
             </div>
           )}
         </div>
@@ -124,8 +140,14 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
 
       <div className="details-actions">
         <button 
+          className="action-btn edit-btn"
+          onClick={() => setShowEditModal(true)}
+        >
+          ✏️ Rediger
+        </button>
+        <button 
           className="action-btn history-btn"
-          onClick={() => onOpenHistory(item)}
+          onClick={() => onOpenHistory(editedItem)}
         >
           📋 Historikk {hasHistory && <span className="badge">{serviceHistory[key].length}</span>}
         </button>
@@ -136,6 +158,14 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
           📄 Eksporter PDF
         </button>
       </div>
+
+      {showEditModal && (
+        <EditItemModal
+          item={editedItem}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 }

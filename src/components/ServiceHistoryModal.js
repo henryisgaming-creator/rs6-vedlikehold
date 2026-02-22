@@ -6,7 +6,9 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     km: '',
-    notes: ''
+    notes: '',
+    cost: '',
+    images: []
   });
   const [savedMessage, setSavedMessage] = useState(false);
 
@@ -14,7 +16,6 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
   const records = history[key] || [];
 
   useEffect(() => {
-    // Auto-hide saved message after 2 seconds
     if (savedMessage) {
       const timer = setTimeout(() => setSavedMessage(false), 2000);
       return () => clearTimeout(timer);
@@ -29,14 +30,38 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
     }));
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target.result;
+        setFormData(prev => ({
+          ...prev,
+          images: [...prev.images, { data: base64, name: file.name }]
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleAddRecord = (e) => {
     e.preventDefault();
     if (formData.date && formData.km) {
-      onAddRecord(item, formData.date, formData.km, formData.notes);
+      onAddRecord(item, formData.date, formData.km, formData.notes, formData.images, parseFloat(formData.cost) || 0);
       setFormData({
         date: new Date().toISOString().split('T')[0],
         km: '',
-        notes: ''
+        notes: '',
+        cost: '',
+        images: []
       });
       setShowForm(false);
       setSavedMessage(true);
@@ -74,7 +99,17 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
                 <div key={idx} className="history-item">
                   <div className="history-date">{formatDate(record.date)}</div>
                   <div className="history-km">{record.km} km</div>
+                  {record.cost && record.cost > 0 && (
+                    <div className="history-cost">💰 {record.cost.toLocaleString('no-NO')} kr</div>
+                  )}
                   {record.notes && <div className="history-notes">{record.notes}</div>}
+                  {record.images && record.images.length > 0 && (
+                    <div className="history-images">
+                      {record.images.map((img, imgIdx) => (
+                        <img key={imgIdx} src={img.data} alt={`Service ${idx}`} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -108,16 +143,61 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
               </div>
 
               <div className="form-group">
-                <label htmlFor="service-notes">Notater (valgfritt):</label>
+                <label htmlFor="service-notes">Notater:</label>
                 <textarea
                   id="service-notes"
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="Beskrivelse av service..."
-                  rows="3"
+                  placeholder="Detaljer, deler brukt, kostnader..."
+                  rows="2"
                 />
               </div>
+
+              <div className="form-group">
+                <label htmlFor="service-cost">Kostnad (kr):</label>
+                <input
+                  id="service-cost"
+                  type="number"
+                  name="cost"
+                  value={formData.cost}
+                  onChange={handleInputChange}
+                  placeholder="0"
+                  min="0"
+                  step="50"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="service-images">Bilder av jobben:</label>
+                <input
+                  id="service-images"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="file-input"
+                />
+              </div>
+
+              {formData.images.length > 0 && (
+                <div className="image-preview-list">
+                  <p className="preview-label">📷 {formData.images.length} bilde(r) valgt:</p>
+                  <div className="image-grid">
+                    {formData.images.map((img, idx) => (
+                      <div key={idx} className="image-preview-item">
+                        <img src={img.data} alt="Preview" />
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={() => removeImage(idx)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="form-buttons">
                 <button type="submit" className="btn btn-primary">Lagre</button>

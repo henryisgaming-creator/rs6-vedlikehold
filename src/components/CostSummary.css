@@ -1,0 +1,150 @@
+/* Cost Summary Styles */
+.cost-summary {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #4b5563;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cost-summary-header {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cost-summary-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.cost-card {
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.cost-card.total-card {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.cost-label {
+  font-size: 12px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.cost-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+
+.cost-detail {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.cost-breakdown {
+  margin-top: 20px;
+}
+
+.cost-breakdown h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #d1d5db;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.category-costs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-cost-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 100px;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-cost-label {
+  font-size: 13px;
+  color: #d1d5db;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-cost-bar {
+  height: 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #4b5563;
+}
+
+.category-cost-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.category-cost-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
+  text-align: right;
+}
+
+.no-costs {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .cost-summary {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .cost-summary-header h3 {
+    font-size: 16px;
+  }
+
+  .cost-card {
+    padding: 12px;
+  }
+
+  .cost-amount {
+    font-size: 24px;
+  }
+
+  .category-cost-item {
+    grid-template-columns: 100px 1fr 80px;
+    gap: 8px;
+  }
+
+  .category-cost-label {
+    font-size: 12px;
+  }
+}
