@@ -126,12 +126,6 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
                       </div>
                     </div>
                   )}
-
-                  {totalCost > 0 && (
-                    <div className="item-cost">
-                      💸 {totalCost.toLocaleString('no-NO')} kr
-                    </div>
-                  )}
                 </div>
               </div>
             );

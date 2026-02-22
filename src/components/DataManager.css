@@ -1,0 +1,75 @@
+/* Data Manager Styles */
+.data-manager {
+  width: 100%;
+  max-width: 600px;
+}
+
+.data-manager-card {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.data-manager-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #f3f4f6;
+  font-weight: 600;
+}
+
+.data-manager-description {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.data-manager-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.data-manager-actions .btn {
+  flex: 1;
+  min-width: 140px;
+}
+
+.file-input-btn {
+  cursor: pointer;
+}
+
+.file-input-btn:hover {
+  background-color: #4b5563;
+}
+
+.data-manager-info {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid #6366f1;
+  border-radius: 4px;
+}
+
+.data-manager-info small {
+  color: #d1d5db;
+  line-height: 1.4;
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .data-manager-card {
+    padding: 16px;
+  }
+
+  .data-manager-actions {
+    flex-direction: column;
+  }
+
+  .data-manager-actions .btn {
+    min-width: auto;
+  }
+}

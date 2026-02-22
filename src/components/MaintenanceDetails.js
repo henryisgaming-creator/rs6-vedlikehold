@@ -20,17 +20,37 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   };
 
   const calculateProgress = () => {
-    if (!currentKm || !item.nextRecommendedKm) return null;
-    const kmNum = parseInt(currentKm);
-    const nextKm = parseInt(item.nextRecommendedKm);
-    const remaining = nextKm - kmNum;
-    const progress = Math.max(0, Math.min(100, ((kmNum - (item.kmAtLastChange || 0)) / item.interval.match(/\d+/)?.[0] || 100) * 100));
+    let percentage = null;
+    let display = null;
     
-    return {
-      remaining,
-      progress,
-      status: remaining <= 0 ? 'overdue' : remaining <= 5000 ? 'urgent' : 'ok'
-    };
+    // Calculate based on km if available
+    if (editedItem.intervalKm && editedItem.kmAtLastChange && currentKm) {
+      const kmNum = parseInt(currentKm);
+      const lastKm = parseInt(editedItem.kmAtLastChange);
+      const interval = parseInt(editedItem.intervalKm);
+      const kmUsed = kmNum - lastKm;
+      percentage = Math.min(100, Math.max(0, (kmUsed / interval) * 100));
+      const kmRemaining = interval - kmUsed;
+      display = kmRemaining > 0 ? `${kmRemaining} km igjen` : `${Math.abs(kmRemaining)} km overskredet`;
+    }
+    // Calculate based on years if km not available
+    else if (editedItem.intervalYears && editedItem.lastChanged) {
+      const lastDate = new Date(editedItem.lastChanged);
+      if (!isNaN(lastDate.getTime())) {
+        const today = new Date();
+        const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+        const totalDays = editedItem.intervalYears * 365;
+        percentage = Math.min(100, Math.max(0, (daysElapsed / totalDays) * 100));
+        const daysRemaining = totalDays - daysElapsed;
+        display = daysRemaining > 0 ? `${Math.floor(daysRemaining)} dager igjen` : `${Math.floor(Math.abs(daysRemaining))} dager overskredet`;
+      }
+    }
+    
+    if (percentage !== null) {
+      const status = percentage >= 100 ? 'overdue' : percentage >= 80 ? 'urgent' : 'ok';
+      return { percentage, display, status };
+    }
+    return null;
   };
 
   const handleExportPDF = async () => {
@@ -64,7 +84,7 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   };
 
   const progressData = calculateProgress();
-  const key = `${item.category}|${item.part}`;
+  const key = `${editedItem.category || 'custom'}|${editedItem.part}`;
   const hasHistory = serviceHistory[key] && serviceHistory[key].length > 0;
 
   const handleEditSave = (updatedItem) => {
@@ -86,7 +106,13 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
         <div className="details-content">
           <div className="detail-section">
             <h3>Anbefalt intervall</h3>
-            <p className="detail-value">{editedItem.intervalKm ? `${editedItem.intervalKm} km` : ''} {editedItem.intervalYears ? `/ ${editedItem.intervalYears} år` : ''}</p>
+            {editedItem.intervalKm ? (
+              <p className="detail-value">{editedItem.intervalKm} km</p>
+            ) : editedItem.intervalYears ? (
+              <p className="detail-value">{editedItem.intervalYears} år</p>
+            ) : (
+              <p className="detail-value">{editedItem.interval || 'Ikke spesifisert'}</p>
+            )}
           </div>
 
           <div className="detail-section">
@@ -98,22 +124,23 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
           </div>
 
           <div className="detail-section">
-            <h3>Neste anbefalte bytte</h3>
-            <p className="detail-value">{editedItem.nextRecommendedKm || 'Ikke beregnet'} km</p>
-            {progressData && (
+            <h3>Fremgang</h3>
+            {progressData ? (
               <>
-                <div className="progress-bar">
-                  <div 
-                    className={`progress-fill ${progressData.status}`}
-                    style={{ width: `${progressData.progress}%` }}
-                  ></div>
+                <div className="progress-bar-container">
+                  <div className="progress-bar">
+                    <div 
+                      className={`progress-fill ${progressData.status}`}
+                      style={{ width: `${progressData.percentage}%` }}
+                    ></div>
+                  </div>
+                  <p className={`progress-text ${progressData.status}`}>
+                    {progressData.display}
+                  </p>
                 </div>
-                <p className={`detail-subtext progress-text ${progressData.status}`}>
-                  {progressData.remaining <= 0 
-                    ? `⚠️ Overskredet med ${Math.abs(progressData.remaining)} km`
-                    : `${progressData.remaining} km igjen`}
-                </p>
               </>
+            ) : (
+              <p className="detail-value">Ingen data for beregning</p>
             )}
           </div>
 

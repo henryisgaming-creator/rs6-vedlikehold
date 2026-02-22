@@ -3,6 +3,7 @@ import './EditItemModal.css';
 
 function EditItemModal({ item, onClose, onSave }) {
   const [formData, setFormData] = useState({
+    part: item.part || '',
     intervalKm: item.intervalKm || '',
     intervalYears: item.intervalYears || '',
     comments: item.comments || '',
@@ -34,8 +35,20 @@ function EditItemModal({ item, onClose, onSave }) {
         <div className="modal-body">
           <form onSubmit={handleSave} className="edit-form">
             <div className="form-section">
-              <h3>📋 {item.part}</h3>
+              <h3>📋 Vedlikehold</h3>
               <p className="item-category-badge">{item.category}</p>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="part">Navn på vedlikehold:</label>
+              <input
+                id="part"
+                type="text"
+                name="part"
+                value={formData.part}
+                onChange={handleInputChange}
+                placeholder="eks: Oljeskift motor"
+              />
             </div>
 
             <div className="form-group">

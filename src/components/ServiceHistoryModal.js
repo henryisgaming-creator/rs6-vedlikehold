@@ -182,14 +182,21 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
               </div>
 
               <div className="form-group">
-                <label htmlFor="service-images">Bilder av jobben:</label>
-                <input
-                  id="service-images"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="file-input"
-                />
+                <label htmlFor="service-images">📷 Bilder av jobben:</label>
+                <div className="file-input-wrapper">
+                  <input
+                    id="service-images"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="file-input"
+                    multiple
+                  />
+                  <div className="file-input-label">
+                    <span className="file-input-icon">📷</span>
+                    <span className="file-input-text">Klikk for å legge til bilder</span>
+                  </div>
+                </div>
               </div>
 
               {formData.images.length > 0 && (

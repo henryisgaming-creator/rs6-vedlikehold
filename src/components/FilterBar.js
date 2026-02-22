@@ -6,11 +6,23 @@ function FilterBar({
   statuses,
   selectedCategory,
   selectedStatus,
+  searchTerm,
   onCategoryChange,
-  onStatusChange
+  onStatusChange,
+  onSearchChange
 }) {
   return (
     <div className="filter-bar">
+      <div className="filter-group search-group">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Søk etter vedlikehold..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
+
       <div className="filter-group">
         <label htmlFor="category-select">Kategori:</label>
         <select

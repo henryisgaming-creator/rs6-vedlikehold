@@ -144,18 +144,23 @@
   color: #d1d5db;
 }
 
+.progress-bar-container {
+  padding: 12px 0;
+}
+
 .progress-bar {
   width: 100%;
-  height: 8px;
+  height: 12px;
   background: #e5e7eb;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
-  margin-top: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dark-mode .progress-bar {
-  background: #4b5563;
+  background: #374151;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-fill {

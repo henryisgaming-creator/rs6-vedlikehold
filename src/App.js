@@ -6,11 +6,14 @@ import MaintenanceDetails from './components/MaintenanceDetails';
 import ServiceHistoryModal from './components/ServiceHistoryModal';
 import AddServiceForm from './components/AddServiceForm';
 import CostSummary from './components/CostSummary';
+import QuickStats from './components/QuickStats';
+import DataManager from './components/DataManager';
 import maintenanceData from './data/maintenance.json';
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentKm, setCurrentKm] = useState('');
   const [serviceHistory, setServiceHistory] = useState({});
@@ -18,6 +21,8 @@ function App() {
   const [selectedItemForHistory, setSelectedItemForHistory] = useState(null);
   const [showAddServiceForm, setShowAddServiceForm] = useState(false);
   const [customServices, setCustomServices] = useState([]);
+  const [activeTab, setActiveTab] = useState('maintenance');
+  const [showNewItemModal, setShowNewItemModal] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -55,14 +60,17 @@ function App() {
   // Get unique statuses
   const statuses = ['All', ...new Set(maintenanceData.map(item => item.status))];
 
-  // Filter data based on selected category and status
+  // Filter data based on selected category, status, and search term
   const filteredData = useMemo(() => {
     return maintenanceData.filter(item => {
       const categoryMatch = selectedCategory === 'All' || item.category === selectedCategory;
       const statusMatch = selectedStatus === 'All' || item.status === selectedStatus;
-      return categoryMatch && statusMatch;
+      const searchMatch = searchTerm === '' || 
+        item.part.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      return categoryMatch && statusMatch && searchMatch;
     });
-  }, [selectedCategory, selectedStatus]);
+  }, [selectedCategory, selectedStatus, searchTerm]);
 
   const handleSelectItem = (item) => {
     setSelectedItem(item);
@@ -104,55 +112,105 @@ function App() {
           <h1>RS6 Vedlikehold</h1>
           <button 
             className="btn-add-service"
-            onClick={() => setShowAddServiceForm(true)}
-            title="Legg til egendefinert vedlikehold"
+            onClick={() => setShowNewItemModal(true)}
+            title="Legg til nytt vedlikehold"
           >
-            + Legg til
+            + Nytt
           </button>
         </div>
-        <div className="km-input">
-          <label htmlFor="current-km">Aktuell km:</label>
-          <input
-            id="current-km"
-            type="number"
-            value={currentKm}
-            onChange={(e) => setCurrentKm(e.target.value)}
-            placeholder="Skriv inn km-stand"
-          />
+        
+        <div className="tab-navigation">
+          <button
+            className={`tab-btn ${activeTab === 'maintenance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('maintenance')}
+          >
+            🔧 Vedlikehold
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'expenses' ? 'active' : ''}`}
+            onClick={() => setActiveTab('expenses')}
+          >
+            💰 Kostnader
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            ⚙️ Innstillinger
+          </button>
         </div>
+
+        {activeTab === 'maintenance' && (
+          <div className="km-input">
+            <label htmlFor="current-km">Aktuell km:</label>
+            <input
+              id="current-km"
+              type="number"
+              value={currentKm}
+              onChange={(e) => setCurrentKm(e.target.value)}
+              placeholder="Skriv inn km-stand"
+            />
+          </div>
+        )}
       </header>
 
-      <FilterBar 
-        categories={categories}
-        statuses={statuses}
-        selectedCategory={selectedCategory}
-        selectedStatus={selectedStatus}
-        onCategoryChange={setSelectedCategory}
-        onStatusChange={setSelectedStatus}
-      />
-
-      <main className="app-main">
-        {selectedItem ? (
-          <MaintenanceDetails 
-            item={selectedItem}
-            currentKm={currentKm}
-            onClose={handleCloseDetails}
-            onAddServiceRecord={handleAddServiceRecord}
-            onOpenHistory={handleOpenHistory}
-            serviceHistory={serviceHistory}
+      {activeTab === 'maintenance' && (
+        <>
+          <FilterBar 
+            categories={categories}
+            statuses={statuses}
+            selectedCategory={selectedCategory}
+            selectedStatus={selectedStatus}
+            searchTerm={searchTerm}
+            onCategoryChange={setSelectedCategory}
+            onStatusChange={setSelectedStatus}
+            onSearchChange={setSearchTerm}
           />
-        ) : (
-          <>
-            <CostSummary serviceHistory={serviceHistory} />
-            <MaintenanceList 
-              items={filteredData}
-              onSelectItem={handleSelectItem}
-              currentKm={currentKm}
-              serviceHistory={serviceHistory}
-            />
-          </>
-        )}
-      </main>
+
+          <main className="app-main">
+            {selectedItem ? (
+              <MaintenanceDetails 
+                item={selectedItem}
+                currentKm={currentKm}
+                onClose={handleCloseDetails}
+                onAddServiceRecord={handleAddServiceRecord}
+                onOpenHistory={handleOpenHistory}
+                serviceHistory={serviceHistory}
+              />
+            ) : (
+              <>
+                <QuickStats 
+                  items={filteredData}
+                  currentKm={currentKm}
+                  serviceHistory={serviceHistory}
+                />
+                <MaintenanceList 
+                  items={filteredData}
+                  onSelectItem={handleSelectItem}
+                  currentKm={currentKm}
+                  serviceHistory={serviceHistory}
+                />
+              </>
+            )}
+          </main>
+        </>
+      )}
+
+      {activeTab === 'expenses' && (
+        <main className="app-main expenses-view">
+          <CostSummary serviceHistory={serviceHistory} />
+        </main>
+      )}
+
+      {activeTab === 'settings' && (
+        <main className="app-main settings-view">
+          <DataManager 
+            serviceHistory={serviceHistory} 
+            customServices={customServices}
+            currentKm={currentKm}
+          />
+        </main>
+      )}
 
       {showHistoryModal && selectedItemForHistory && (
         <ServiceHistoryModal
@@ -167,6 +225,14 @@ function App() {
         <AddServiceForm
           onAddService={handleAddCustomService}
           onClose={() => setShowAddServiceForm(false)}
+        />
+      )}
+
+      {showNewItemModal && (
+        <AddServiceForm
+          onAddService={handleAddCustomService}
+          onClose={() => setShowNewItemModal(false)}
+          title="Legg til nytt vedlikehold"
         />
       )}
     </div>
