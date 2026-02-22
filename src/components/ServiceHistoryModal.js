@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ServiceHistoryModal.css';
 
 function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
@@ -8,9 +8,18 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
     km: '',
     notes: ''
   });
+  const [savedMessage, setSavedMessage] = useState(false);
 
   const key = `${item.category}|${item.part}`;
   const records = history[key] || [];
+
+  useEffect(() => {
+    // Auto-hide saved message after 2 seconds
+    if (savedMessage) {
+      const timer = setTimeout(() => setSavedMessage(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [savedMessage]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +39,7 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
         notes: ''
       });
       setShowForm(false);
+      setSavedMessage(true);
     }
   };
 
@@ -51,6 +61,10 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
 
         <div className="modal-body">
           <h3>Servicehistorikk</h3>
+          
+          {savedMessage && (
+            <div className="saved-message">✅ Service registrert!</div>
+          )}
           
           {records.length === 0 ? (
             <p className="no-records">Ingen servicehistorikk registrert</p>

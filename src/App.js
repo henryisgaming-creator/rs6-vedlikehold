@@ -11,7 +11,6 @@ function App() {
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentKm, setCurrentKm] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
   const [serviceHistory, setServiceHistory] = useState({});
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedItemForHistory, setSelectedItemForHistory] = useState(null);
@@ -20,11 +19,9 @@ function App() {
   useEffect(() => {
     const saved = localStorage.getItem('serviceHistory');
     const savedKm = localStorage.getItem('currentKm');
-    const savedDarkMode = localStorage.getItem('darkMode');
     
     if (saved) setServiceHistory(JSON.parse(saved));
     if (savedKm) setCurrentKm(savedKm);
-    if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode));
   }, []);
 
   // Save to localStorage when changes
@@ -36,10 +33,10 @@ function App() {
     localStorage.setItem('currentKm', currentKm);
   }, [currentKm]);
 
+  // Apply dark mode to body on mount
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    document.body.className = darkMode ? 'dark-mode' : '';
-  }, [darkMode]);
+    document.body.className = 'dark-mode';
+  }, []);
 
   // Get unique categories
   const categories = ['All', ...new Set(maintenanceData.map(item => item.category))];
@@ -84,17 +81,10 @@ function App() {
   };
 
   return (
-    <div className={`app ${darkMode ? 'dark-mode' : ''}`}>
+    <div className="app dark-mode">
       <header className="app-header">
         <div className="header-top">
           <h1>RS6 Vedlikehold</h1>
-          <button 
-            className="dark-mode-toggle"
-            onClick={() => setDarkMode(!darkMode)}
-            title={darkMode ? 'Light mode' : 'Dark mode'}
-          >
-            {darkMode ? '☀️' : '🌙'}
-          </button>
         </div>
         <div className="km-input">
           <label htmlFor="current-km">Aktuell km:</label>
