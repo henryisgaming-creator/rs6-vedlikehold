@@ -6,8 +6,7 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedItem, setEditedItem] = useState(item);
 
-  // Parse date for display (returns string)
-  const formatDateForDisplay = (dateValue) => {
+  const parseDate = (dateValue) => {
     if (!dateValue) return 'Ikke registrert';
     if (typeof dateValue === 'number') {
       // Excel date format
@@ -15,33 +14,6 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
       return date.toLocaleDateString('no-NO');
     }
     return dateValue;
-  };
-
-  // Parse date for calculations (returns Date object or null)
-  const parseDateForCalc = (dateValue) => {
-    if (!dateValue) return null;
-    
-    // Try direct parsing first
-    let parsed = new Date(dateValue);
-    if (!isNaN(parsed.getTime())) return parsed;
-    
-    // Try parsing MM.YY format (e.g. "08.25" = August 2025)
-    if (typeof dateValue === 'string' && dateValue.includes('.')) {
-      const parts = dateValue.split('.');
-      if (parts.length === 2 && parts[0].length <= 2 && parts[1].length <= 2) {
-        const month = parseInt(parts[0]);
-        let year = parseInt(parts[1]);
-        // Assume 20xx for 2-digit years
-        if (year < 100) year += 2000;
-        if (month >= 1 && month <= 12) {
-          parsed = new Date(year, month - 1, 1);
-          if (!isNaN(parsed.getTime())) return parsed;
-        }
-      }
-    }
-    
-    // If parsing failed, return null
-    return null;
   };
 
   const calculateProgress = () => {
@@ -64,10 +36,10 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
       display = kmRemaining > 0 ? `${kmRemaining} km igjen` : `${Math.abs(kmRemaining)} km overskredet`;
     }
     // Calculate based on years if km not available
-    else if (editedItem.intervalYears) {
+    else if (editedItem.intervalYears && (latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged)) {
       const sourceDate = latestRecord && latestRecord.date ? latestRecord.date : editedItem.lastChanged;
-      const lastDate = parseDateForCalc(sourceDate);
-      if (lastDate && !isNaN(lastDate.getTime())) {
+      const lastDate = new Date(sourceDate);
+      if (!isNaN(lastDate.getTime())) {
         const today = new Date();
         const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
         const totalDays = editedItem.intervalYears * 365;
@@ -127,7 +99,7 @@ function MaintenanceDetails({ item, currentKm, onClose, onAddServiceRecord, onOp
 
           <div className="detail-section">
             <h3>Sist byttet</h3>
-            <p className="detail-value">{formatDateForDisplay(editedItem.lastChanged)}</p>
+            <p className="detail-value">{parseDate(editedItem.lastChanged)}</p>
             {editedItem.kmAtLastChange && (
               <p className="detail-subtext">ved {editedItem.kmAtLastChange} km</p>
             )}
