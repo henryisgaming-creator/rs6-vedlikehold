@@ -12,8 +12,9 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
   });
   const [savedMessage, setSavedMessage] = useState(false);
 
-  const key = `${item.category}|${item.part}`;
-  const records = history[key] || [];
+  // Safely create the key, handling missing category
+  const key = item ? `${item.category || 'custom'}|${item.part}` : null;
+  const records = key ? (history[key] || []) : [];
 
   useEffect(() => {
     if (savedMessage) {
@@ -79,13 +80,25 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{item.part}</h2>
-          <button className="modal-close-btn" onClick={onClose}>✕</button>
-        </div>
+        {!item ? (
+          <>
+            <div className="modal-header">
+              <h2>Feil</h2>
+              <button className="modal-close-btn" onClick={onClose}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p>Kunne ikke laste vedliekehold. Prøv igjen.</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="modal-header">
+              <h2>{item.part}</h2>
+              <button className="modal-close-btn" onClick={onClose}>✕</button>
+            </div>
 
-        <div className="modal-body">
-          <h3>Servicehistorikk</h3>
+            <div className="modal-body">
+              <h3>Servicehistorikk</h3>
           
           {savedMessage && (
             <div className="saved-message">✅ Service registrert!</div>
@@ -213,6 +226,8 @@ function ServiceHistoryModal({ item, history, onClose, onAddRecord }) {
             </button>
           )}
         </div>
+          </>
+        )}
       </div>
     </div>
   );

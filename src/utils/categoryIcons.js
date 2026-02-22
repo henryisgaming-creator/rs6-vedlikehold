@@ -46,15 +46,35 @@ export const getStatusIcon = (status) => {
 };
 
 export const calculateDaysUntilDue = (lastChanged, intervalYears, currentKm, lastKm, intervalKm) => {
-  if (!lastChanged) return null;
+  // Return null if critical data is missing
+  if (!lastChanged && (!lastKm || lastKm === 0)) return null;
   
-  const lastDate = new Date(lastChanged);
-  const today = new Date();
-  const daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-  const daysDue = (intervalYears * 365) - daysElapsed;
+  let daysDue = null;
+  let kmDue = null;
+  let daysElapsed = null;
+  let kmElapsed = null;
   
-  const kmElapsed = currentKm - lastKm;
-  const kmDue = intervalKm - kmElapsed;
+  // Calculate days only if lastChanged is a valid date
+  if (lastChanged && lastChanged.length > 4) {  // More than just a year
+    const lastDate = new Date(lastChanged);
+    // Check if date is valid
+    if (!isNaN(lastDate.getTime())) {
+      const today = new Date();
+      daysElapsed = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      if (intervalYears && intervalYears > 0) {
+        daysDue = (intervalYears * 365) - daysElapsed;
+      }
+    }
+  }
+  
+  // Calculate km only if lastKm is valid and not null
+  if (lastKm && lastKm > 0 && currentKm && currentKm > 0 && intervalKm && intervalKm > 0) {
+    kmElapsed = currentKm - lastKm;
+    kmDue = intervalKm - kmElapsed;
+  }
+  
+  // Return null if we have no valid calculations
+  if (daysDue === null && kmDue === null) return null;
   
   return { daysDue, kmDue, daysElapsed, kmElapsed };
 };
@@ -65,9 +85,10 @@ export const getUrgencyStatus = (lastChanged, intervalYears, currentKm, lastKm, 
   
   const { daysDue, kmDue } = calc;
   
-  if (daysDue < 0 || kmDue < 0) {
+  // Check if either metric indicates overdue
+  if ((daysDue !== null && daysDue < 0) || (kmDue !== null && kmDue < 0)) {
     return 'Overdue';
-  } else if (daysDue < 30 || kmDue < 500) {
+  } else if ((daysDue !== null && daysDue < 30) || (kmDue !== null && kmDue < 500)) {
     return 'Due Soon';
   } else {
     return 'OK';

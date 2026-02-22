@@ -6,12 +6,27 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
   // Calculate urgency and sort items
   const sortedItems = useMemo(() => {
     const itemsWithUrgency = items.map(item => {
+      // Extract intervalKm and intervalYears from the item
+      let intervalKm = item.intervalKm || 0;
+      let intervalYears = item.intervalYears || 0;
+      
+      // Try to parse from interval string if not present
+      if (!intervalKm && item.interval) {
+        const kmMatch = item.interval.match(/(\d+)\s*km/);
+        if (kmMatch) intervalKm = parseInt(kmMatch[1]);
+      }
+      
+      if (!intervalYears && item.interval) {
+        const yearMatch = item.interval.match(/(\d+(?:\.\d+)?)\s*år/);
+        if (yearMatch) intervalYears = parseFloat(yearMatch[1]);
+      }
+      
       const status = getUrgencyStatus(
         item.lastChanged,
-        item.intervalYears || 1,
+        intervalYears,
         parseInt(currentKm) || 0,
         parseInt(item.kmAtLastChange) || 0,
-        parseInt(item.intervalKm) || 10000
+        intervalKm
       );
 
       return { item, status };
@@ -42,12 +57,27 @@ function MaintenanceList({ items, onSelectItem, currentKm, serviceHistory = {} }
             const categoryColor = getCategoryColor(item.category);
             const urgencyColor = getUrgencyColor(status);
             const totalCost = getItemTotalCost(item.category, item.part);
+            
+            // Parse intervals from string if needed
+            let intervalKm = item.intervalKm || 0;
+            let intervalYears = item.intervalYears || 0;
+            
+            if (!intervalKm && item.interval) {
+              const kmMatch = item.interval.match(/(\d+)\s*km/);
+              if (kmMatch) intervalKm = parseInt(kmMatch[1]);
+            }
+            
+            if (!intervalYears && item.interval) {
+              const yearMatch = item.interval.match(/(\d+(?:\.\d+)?)\s*år/);
+              if (yearMatch) intervalYears = parseFloat(yearMatch[1]);
+            }
+            
             const calc = calculateDaysUntilDue(
               item.lastChanged,
-              item.intervalYears || 1,
+              intervalYears,
               parseInt(currentKm) || 0,
               parseInt(item.kmAtLastChange) || 0,
-              parseInt(item.intervalKm) || 10000
+              intervalKm
             );
 
             return (
