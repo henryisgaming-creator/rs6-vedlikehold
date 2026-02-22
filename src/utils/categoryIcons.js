@@ -58,8 +58,26 @@ export const calculateDaysUntilDue = (lastChanged, intervalYears, currentKm, las
   let kmElapsed = null;
   
   // Calculate days only if lastChanged is a valid date
-  if (lastChanged && lastChanged.length > 4) {  // More than just a year
-    const lastDate = new Date(lastChanged);
+  if (lastChanged) {
+    let lastDate = null;
+    
+    // Try direct Date parsing first
+    lastDate = new Date(lastChanged);
+    
+    // If parsing failed, try MM.YY format (e.g. "08.25" = August 2025)
+    if (isNaN(lastDate.getTime()) && typeof lastChanged === 'string' && lastChanged.includes('.')) {
+      const parts = lastChanged.split('.');
+      if (parts.length === 2 && parts[0].length <= 2 && parts[1].length <= 2) {
+        const month = parseInt(parts[0]);
+        let year = parseInt(parts[1]);
+        // Assume 20xx for 2-digit years
+        if (year < 100) year += 2000;
+        if (month >= 1 && month <= 12) {
+          lastDate = new Date(year, month - 1, 1);
+        }
+      }
+    }
+    
     // Check if date is valid
     if (!isNaN(lastDate.getTime())) {
       const today = new Date();
